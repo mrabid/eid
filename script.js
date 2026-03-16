@@ -32,6 +32,8 @@
 
   /* ── TEMPLATE ── */
   function tryLoadTemplate() {
+    if (tplCanvas) return;
+
     if (templateAsset.complete && templateAsset.naturalWidth > 0) {
       buildTplCanvas(templateAsset);
       return;
@@ -52,13 +54,10 @@
 
     ctx.fillStyle = '#fdf8f4';
     ctx.fillRect(0, 0, CW, CH);
+
     ctx.strokeStyle = 'rgba(201, 168, 76, 0.85)';
     ctx.lineWidth = 24;
     ctx.strokeRect(12, 12, CW - 24, CH - 24);
-
-    ctx.strokeStyle = 'rgba(139, 20, 34, 0.35)';
-    ctx.lineWidth = 14;
-    ctx.strokeRect(70, 70, CW - 140, CH - 140);
 
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
