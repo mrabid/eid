@@ -184,7 +184,7 @@
     const name = (rawName || '').trim();
     if (!name) return;
     ctx.save();
-    const size = 31;
+    const size = 25;
     ctx.font = `600 ${size}px 'Kazi Typo Unicode', 'Cinzel', Georgia, serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 1;
