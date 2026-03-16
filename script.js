@@ -22,6 +22,7 @@
   const canvas             = document.getElementById('previewCanvas');
   const placeholder        = document.getElementById('previewPlaceholder');
   const loadingEl          = document.getElementById('previewLoading');
+  const generateBtn       = document.getElementById('generateBtn');
   const downloadBtn        = document.getElementById('downloadBtn');
   const templateAsset      = document.getElementById('templateAsset');
   const templateWarn       = document.getElementById('templateWarn');
@@ -42,6 +43,7 @@
   /* ── State ── */
   let tplCanvas   = null;   // Offscreen canvas: template with punched hole (built once)
   let photoBitmap = null;   // Offscreen canvas: user photo pre-cropped to 380×380
+  let isGenerated = false;
   let nameTimer   = null;   // Debounce timer for name field
 
 
@@ -59,8 +61,39 @@
     templateAsset.onerror = () => {
       /* Non-fatal — photo still generates, just without the frame */
       if (templateWarn) templateWarn.hidden = false;
-      if (photoBitmap) renderCanvas();
+      tplCanvas = createFallbackTemplate();
+      if (photoBitmap && isGenerated) renderCanvas();
+      else if (!photoBitmap) renderTemplatePreview();
     };
+  }
+
+  function createFallbackTemplate() {
+    const off  = document.createElement('canvas');
+    off.width  = CW;
+    off.height = CH;
+    const ctx  = off.getContext('2d');
+
+    ctx.fillStyle = '#fdf8f4';
+    ctx.fillRect(0, 0, CW, CH);
+
+    // outer soft gold border and inner decorative rings
+    const border = 24;
+    ctx.strokeStyle = 'rgba(201, 168, 76, 0.85)';
+    ctx.lineWidth = border;
+    ctx.strokeRect(border / 2, border / 2, CW - border, CH - border);
+
+    ctx.strokeStyle = 'rgba(139, 20, 34, 0.35)';
+    ctx.lineWidth = 14;
+    ctx.strokeRect(70, 70, CW - 140, CH - 140);
+
+    // punched photo area
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+
+    return off;
   }
 
   function buildTplCanvas(img) {
@@ -80,10 +113,28 @@
 
     tplCanvas = off;
 
-    /* Re-render if user uploaded a photo before the template finished loading */
-    if (photoBitmap) renderCanvas();
-  }
+    /* If there is no photo yet, show the template-only preview */
+    if (!photoBitmap) renderTemplatePreview();
 
+    /* Re-render if user uploaded a photo before the template finished loading */
+    if (photoBitmap && isGenerated) renderCanvas();
+  }
+  function renderTemplatePreview() {
+    if (!tplCanvas) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = CW;
+    canvas.height = CH;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, CW, CH);
+    ctx.drawImage(tplCanvas, 0, 0);
+
+    canvas.hidden      = false;
+    placeholder.hidden = true;
+    generateBtn.disabled = !photoBitmap;
+    downloadBtn.disabled = true;
+  }
 
   /* ════════════════════════════════════════════════════════
      PHOTO LOADING  (FileReader → data: URL — no taint risk)
@@ -111,7 +162,16 @@
       img.onload  = function () {
         try {
           photoBitmap = cropToBitmap(img);
-          renderCanvas();
+          isGenerated = false;
+          showLoading(false);
+          generateBtn.disabled = false;
+          downloadBtn.disabled = true;
+          if (tplCanvas) {
+            renderTemplatePreview();
+          } else {
+            canvas.hidden = true;
+            placeholder.hidden = false;
+          }
         } catch (err) {
           showLoading(false);
           console.error('Image processing error:', err);
@@ -213,28 +273,22 @@
 
     ctx.save();
 
-    const size = 50;
+    const size = 34;
     ctx.font         = `600 ${size}px 'Cinzel', Georgia, serif`;
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'alphabetic';
 
-    const tw = ctx.measureText(name).width;
-    const px = 30, py = 12;
+    /* Text with no background box */
+    ctx.shadowColor   = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur    = 4;
+    ctx.shadowOffsetY = 1;
 
-    /* Pill backdrop */
-    ctx.fillStyle = 'rgba(80, 10, 20, 0.62)';
-    pill(ctx, NAME_X - tw / 2 - px, NAME_Y - size - py + 4, tw + px * 2, size + py * 2, 10);
-    ctx.fill();
-
-    /* Gold stroke + fill */
-    ctx.shadowColor   = 'rgba(0,0,0,0.5)';
-    ctx.shadowBlur    = 8;
-    ctx.shadowOffsetY = 2;
-    ctx.lineWidth     = 2;
-    ctx.strokeStyle   = 'rgba(80,10,20,0.7)';
-    ctx.strokeText(name, NAME_X, NAME_Y);
     ctx.fillStyle = '#f2d568';
     ctx.fillText(name, NAME_X, NAME_Y);
+
+    ctx.lineWidth   = 1.5;
+    ctx.strokeStyle = 'rgba(80, 10, 20, 0.6)';
+    ctx.strokeText(name, NAME_X, NAME_Y);
 
     ctx.restore();
   }
@@ -284,10 +338,28 @@
     loadPhoto(this.files[0]);
   });
 
-  /* Name — debounced 200 ms so we don't render on every keystroke */
+  /* Name input updates state; generation is explicit */
   nameInput.addEventListener('input', function () {
-    clearTimeout(nameTimer);
-    nameTimer = setTimeout(renderCanvas, 200);
+    generateBtn.disabled = !photoBitmap;
+  });
+
+  /* Generate button */
+  generateBtn.addEventListener('click', function () {
+    if (!photoBitmap) {
+      alert('Please upload a photo before generating.');
+      return;
+    }
+
+    const name = nameInput.value.trim();
+    if (!name) {
+      alert('Please enter your name before generating.');
+      nameInput.focus();
+      return;
+    }
+
+    isGenerated = true;
+    showLoading(true);
+    setTimeout(renderCanvas, 0);
   });
 
   /* Drag-and-drop onto upload zone */
