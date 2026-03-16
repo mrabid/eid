@@ -46,6 +46,9 @@
   let isGenerated = false;
   let nameTimer   = null;   // Debounce timer for name field
 
+  // Ensure a frame is always available before template asset loads
+  tplCanvas = createFallbackTemplate();
+
 
   /* ════════════════════════════════════════════════════════
      TEMPLATE
