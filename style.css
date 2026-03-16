@@ -311,19 +311,9 @@ body {
   outline: 1px solid rgba(201,168,76,0.25);
 }
 
-/* Placeholder (no photo yet) */
+/* Placeholder (no photo yet) — now empty, kept for JS toggle */
 .preview-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  color: #c0b0aa;
-  font-size: 0.875rem;
-  padding: 1rem;
-  text-align: center;
+  display: none;
 }
 
 /* Canvas fills its container */
@@ -333,6 +323,7 @@ body {
   height: 100%;
   object-fit: contain;
 }
+#previewCanvas[hidden] { display: none; }
 
 /* Success overlay */
 .preview-success {

@@ -222,10 +222,13 @@
   uploadZone.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); photoInput.click(); } });
 
   downloadBtn.addEventListener('click', () => {
-    if (canvas.hidden || downloadBtn.disabled) return;
+    if (!photoOriginal || downloadBtn.disabled) return;
     try {
-      canvas.toBlob(blob => {
-        if (!blob) return alert('Download failed. Try using a web server instead of opening the file directly.');
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          fallbackDownload();
+          return;
+        }
         const a = document.createElement('a');
         a.download = 'eid-mubarak-chuti.png';
         a.href = URL.createObjectURL(blob);
@@ -235,7 +238,21 @@
         setTimeout(() => URL.revokeObjectURL(a.href), 10000);
       }, 'image/png');
     } catch (e) {
-      alert('Download failed: ' + (e.message || e) + '\nTip: Open the page via a web server, not directly from file://');
+      fallbackDownload();
+    }
+
+    function fallbackDownload() {
+      try {
+        const dataUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.download = 'eid-mubarak-chuti.png';
+        a.href = dataUrl;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } catch (e2) {
+        alert('Download failed. Tip: Open the page via a local web server (e.g. Live Server) instead of file://');
+      }
     }
   });
 
