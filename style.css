@@ -392,14 +392,6 @@ body {
   color: var(--white);
   box-shadow: 0 4px 20px rgba(139,20,34,0.38);
 }
-.btn-secondary {
-  background: linear-gradient(135deg, #56616b 0%, #2e3a42 100%);
-  color: #fff;
-  box-shadow: 0 3px 15px rgba(40,50,60,0.35);
-}
-.btn-secondary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6f7f8d 0%, #3b4854 100%);
-}
 .btn-primary:hover:not(:disabled) {
   background: linear-gradient(135deg, #c0223a 0%, var(--crimson) 100%);
   box-shadow: 0 6px 30px rgba(139,20,34,0.50);

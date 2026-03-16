@@ -22,7 +22,6 @@
   const canvas             = document.getElementById('previewCanvas');
   const placeholder        = document.getElementById('previewPlaceholder');
   const loadingEl          = document.getElementById('previewLoading');
-  const generateBtn       = document.getElementById('generateBtn');
   const downloadBtn        = document.getElementById('downloadBtn');
   const templateAsset      = document.getElementById('templateAsset');
   const templateWarn       = document.getElementById('templateWarn');
@@ -43,7 +42,6 @@
   /* ── State ── */
   let tplCanvas   = null;   // Offscreen canvas: template with punched hole (built once)
   let photoBitmap = null;   // Offscreen canvas: user photo pre-cropped to 380×380
-  let isGenerated = false;
   let nameTimer   = null;   // Debounce timer for name field
 
   // Ensure a frame is always available before template asset loads
@@ -65,8 +63,8 @@
       /* Non-fatal — photo still generates, just without the frame */
       if (templateWarn) templateWarn.hidden = false;
       tplCanvas = createFallbackTemplate();
-      if (photoBitmap && isGenerated) renderCanvas();
-      else if (!photoBitmap) renderTemplatePreview();
+      if (photoBitmap) renderCanvas();
+      else renderTemplatePreview();
     };
   }
 
@@ -120,7 +118,7 @@
     if (!photoBitmap) renderTemplatePreview();
 
     /* Re-render if user uploaded a photo before the template finished loading */
-    if (photoBitmap && isGenerated) renderCanvas();
+    if (photoBitmap) renderCanvas();
   }
   function renderTemplatePreview() {
     if (!tplCanvas) return;
@@ -135,7 +133,6 @@
 
     canvas.hidden      = false;
     placeholder.hidden = true;
-    generateBtn.disabled = !photoBitmap;
     downloadBtn.disabled = true;
   }
 
@@ -165,16 +162,8 @@
       img.onload  = function () {
         try {
           photoBitmap = cropToBitmap(img);
-          isGenerated = false;
-          showLoading(false);
-          generateBtn.disabled = false;
-          downloadBtn.disabled = true;
-          if (tplCanvas) {
-            renderTemplatePreview();
-          } else {
-            canvas.hidden = true;
-            placeholder.hidden = false;
-          }
+          renderCanvas();
+          downloadBtn.disabled = false;
         } catch (err) {
           showLoading(false);
           console.error('Image processing error:', err);
@@ -341,28 +330,14 @@
     loadPhoto(this.files[0]);
   });
 
-  /* Name input updates state; generation is explicit */
+  /* Name input triggers re-render after each change */
   nameInput.addEventListener('input', function () {
-    generateBtn.disabled = !photoBitmap;
-  });
-
-  /* Generate button */
-  generateBtn.addEventListener('click', function () {
-    if (!photoBitmap) {
-      alert('Please upload a photo before generating.');
-      return;
-    }
-
-    const name = nameInput.value.trim();
-    if (!name) {
-      alert('Please enter your name before generating.');
-      nameInput.focus();
-      return;
-    }
-
-    isGenerated = true;
-    showLoading(true);
-    setTimeout(renderCanvas, 0);
+    clearTimeout(nameTimer);
+    nameTimer = setTimeout(function () {
+      if (!photoBitmap) return;
+      renderCanvas();
+      downloadBtn.disabled = false;
+    }, 200);
   });
 
   /* Drag-and-drop onto upload zone */
