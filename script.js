@@ -159,6 +159,15 @@
         dw, dh
       );
       ctx.restore();
+
+      // Red circle border
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
+      ctx.strokeStyle = '#e30000';
+      ctx.lineWidth = 8;
+      ctx.stroke();
+      ctx.restore();
     }
  
     // 2️⃣ Draw template on top (with circular window cut out)
@@ -176,12 +185,12 @@
     const name = (rawName || '').trim();
     if (!name) return;
     ctx.save();
-    const size = 34;
+    const size = 33;
     ctx.font = `600 ${size}px 'Cinzel', Georgia, serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 1;
-    ctx.fillStyle = '#f2d568'; ctx.fillText(name, NAME_X, NAME_Y);
-    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(80, 10, 20, 0.6)'; ctx.strokeText(name, NAME_X, NAME_Y);
+    ctx.fillStyle = '#e30000'; ctx.fillText(name, NAME_X, NAME_Y);
+    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(80, 0, 0, 0.4)'; ctx.strokeText(name, NAME_X, NAME_Y);
     ctx.restore();
   }
 
