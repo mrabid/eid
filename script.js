@@ -257,4 +257,50 @@
       if (e.target === overlay) closePopup();
     });
   }());
+
+  /* ── bKash number click-to-copy ── */
+  (function () {
+    var toast = document.getElementById('copyToast');
+    var hideTimer;
+
+    document.querySelectorAll('[data-copy]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var num = el.getAttribute('data-copy');
+        if (!num) return;
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(num).then(showToast).catch(fallbackCopy);
+        } else {
+          fallbackCopy();
+        }
+
+        function fallbackCopy() {
+          var ta = document.createElement('textarea');
+          ta.value = num;
+          ta.style.cssText = 'position:fixed;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          showToast();
+        }
+      });
+
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+      });
+    });
+
+    function showToast() {
+      if (!toast) return;
+      clearTimeout(hideTimer);
+      toast.hidden = false;
+      toast.classList.add('show');
+      hideTimer = setTimeout(function () {
+        toast.classList.remove('show');
+        setTimeout(function () { toast.hidden = true; }, 300);
+      }, 1800);
+    }
+  }());
 })();
