@@ -11,7 +11,7 @@
   const loadingEl = document.getElementById('previewLoading');
   const downloadBtn = document.getElementById('downloadBtn');
   const templateAsset = document.getElementById('templateAsset');
-  const templateWarn = document.getElementById('templateWarn');
+
 
   /* ── Canvas size ── */
   const CW = 1080, CH = 1080;
@@ -46,7 +46,6 @@
     // Otherwise, wait for load / error.
     templateAsset.onload = function () { buildTplCanvas(templateAsset); };
     templateAsset.onerror = function () {
-      if (templateWarn) templateWarn.hidden = false;
       tplCanvas = createFallbackTemplate();
       renderCanvas();
     };
@@ -232,4 +231,30 @@
   });
 
   tryLoadTemplate();
+
+  /* ── Eid Salami Popup ── */
+  (function () {
+    const overlay = document.getElementById('salamiOverlay');
+    const closeBtn = document.getElementById('salamiClose');
+    const countEl = document.getElementById('timerCount');
+    if (!overlay) return;
+
+    let seconds = 7;
+    const interval = setInterval(function () {
+      seconds--;
+      if (countEl) countEl.textContent = seconds;
+      if (seconds <= 0) closePopup();
+    }, 1000);
+
+    function closePopup() {
+      clearInterval(interval);
+      overlay.classList.add('hide');
+      setTimeout(function () { overlay.style.display = 'none'; }, 350);
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closePopup();
+    });
+  }());
 })();

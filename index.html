@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eid Photo Generator · Chuti Group</title>
+  <title>Eid Photo Generator · Chuti group</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,11 +21,11 @@
 
       <!-- ── Header ── -->
       <header class="card-header">
-        <img src="assets/logo.png" alt="Chuti Group Logo" class="logo"
+        <img src="assets/logo.png" alt="Chuti group Logo" class="logo"
              onerror="this.style.display='none'">
         <p class="eyebrow">Eid Photo Generator</p>
         <h1 class="card-title">Eid Mubarak</h1>
-        <p class="card-subtitle">from <strong>Chuti Group</strong></p>
+        <p class="card-subtitle">from <strong>Chuti group</strong></p>
         <div class="title-divider" aria-hidden="true"></div>
       </header>
 
@@ -70,11 +70,6 @@
             <input type="file" id="photoInput" accept="image/*" tabindex="-1" />
           </div>
 
-              <!-- Template load-error banner (hidden by default) -->
-          <div class="template-warn" id="templateWarn" hidden>
-            <span class="warn-icon">⚠</span>
-            Frame could not load — photo will still generate without the frame.
-          </div>
         </div>
       </section>
 
@@ -115,7 +110,103 @@
         </button>
       </div>
 
+      <!-- ── Inline Salami Banner ── -->
+      <section class="inline-salami" aria-label="Eid Salami">
+        <div class="is-moon" aria-hidden="true">☪️</div>
+
+        <p class="is-hook">🎁 ঈদ সালামি পাঠান!</p>
+
+        <div class="is-verse">
+          <p>ঈদের চাঁদ আকাশে,</p>
+          <p class="is-verse-bold">সালামি দিন বিকাশ-এ 💸</p>
+        </div>
+
+        <div class="is-divider" aria-hidden="true"></div>
+
+        <p class="is-bkash-label">📲 bKash Personal Number</p>
+        <p class="is-bkash-number">01742-314777</p>
+
+        <div class="is-ref">
+          <p class="is-ref-title">✏️ Reference-এ অবশ্যই লিখুন</p>
+          <div class="is-chips">
+            <span class="is-chip">আপনার নাম</span>
+            <span class="is-chip">বিভাগ</span>
+            <span class="is-chip">গ্রুপের নাম</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Help ── -->
+      <p class="help-line">
+        সমস্যা হলে
+        <a href="https://wa.me/8801335113405" target="_blank" rel="noopener" class="help-wa">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WhatsApp করুন: 01335-113405
+        </a>
+      </p>
+
     </main>
+  </div>
+
+  <!-- ── Eid Salami Popup ── -->
+  <div class="salami-overlay" id="salamiOverlay" role="dialog" aria-modal="true" aria-labelledby="salamiTitle">
+    <div class="salami-card">
+
+      <button class="salami-close" id="salamiClose" aria-label="Close">&#x2715;</button>
+
+      <!-- Festive header -->
+      <div class="salami-header" aria-hidden="true">
+        <span class="salami-moon-emoji">☪️</span>
+        <div class="salami-sparkles">
+          <span>✦</span><span>✧</span><span>✦</span>
+        </div>
+      </div>
+
+      <div class="salami-body-wrap">
+
+        <!-- Hook line -->
+        <p class="salami-hook" id="salamiTitle">🎁 ঈদ সালামি পাঠান!</p>
+
+        <!-- Tagline -->
+        <div class="salami-verse">
+          <p>ঈদের চাঁদ আকাশে,</p>
+          <p class="verse-bold">সালামি দিন বিকাশ-এ 💸</p>
+        </div>
+
+        <!-- Divider -->
+        <div class="salami-divider" aria-hidden="true"></div>
+
+        <!-- bKash section -->
+        <p class="bkash-tag">📲 bKash Personal Number</p>
+        <div class="salami-bkash">
+          <span class="bkash-number">01742-314777</span>
+        </div>
+
+        <!-- Reference note -->
+        <div class="salami-ref">
+          <p class="ref-title">✏️ Reference-এ অবশ্যই লিখুন</p>
+          <div class="ref-chips">
+            <span class="chip">আপনার নাম</span>
+            <span class="chip">বিভাগ</span>
+            <span class="chip">গ্রুপের নাম</span>
+          </div>
+        </div>
+
+        <!-- WhatsApp help -->
+        <a class="salami-whatsapp" href="https://wa.me/8801335113405" target="_blank" rel="noopener">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          সমস্যা? WhatsApp করুন: 01335-113405
+        </a>
+
+        <!-- Countdown bar -->
+        <div class="salami-timer" aria-hidden="true">
+          <div class="timer-bar" id="timerBar"></div>
+        </div>
+        <p class="timer-label"><span id="timerCount">7</span> সেকেন্ডে স্বয়ংক্রিয়ভাবে বন্ধ হবে</p>
+
+      </div>
+
+    </div>
   </div>
 
   <!-- Preload the template (new, optimized file) so canvas can use it -->
