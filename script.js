@@ -21,7 +21,7 @@
   const CIRCLE_R = 190;
 
   const NAME_X = 535;
-  const NAME_Y = 930;
+  const NAME_Y = 910;
  
   let tplCanvas = null;
   let photoBitmap = null;
@@ -185,8 +185,8 @@
     const name = (rawName || '').trim();
     if (!name) return;
     ctx.save();
-    const size = 33;
-    ctx.font = `600 ${size}px 'Cinzel', Georgia, serif`;
+    const size = 31;
+    ctx.font = `600 ${size}px 'Kazi Typo Unicode', 'Cinzel', Georgia, serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
     ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 1;
     ctx.fillStyle = '#e30000'; ctx.fillText(name, NAME_X, NAME_Y);
