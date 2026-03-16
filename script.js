@@ -142,16 +142,16 @@
     const iw    = img.naturalWidth  || img.width;
     const ih    = img.naturalHeight || img.height;
     const scale = Math.max(size / iw, size / ih);
-    const sw    = Math.round(iw * scale);
-    const sh    = Math.round(ih * scale);
+    const sw    = iw * scale;
+    const sh    = ih * scale;
 
     const off   = document.createElement('canvas');
     off.width   = size;
     off.height  = size;
     off.getContext('2d').drawImage(
       img,
-      -Math.round((sw - size) / 2),
-      -Math.round((sh - size) / 2),
+      -(sw - size) / 2,
+      -(sh - size) / 2,
       sw, sh
     );
     return off;
@@ -181,12 +181,7 @@
       ctx.beginPath();
       ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
       ctx.clip();
-      ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R);
-      ctx.restore();
-
-      /* 3. Template with punched hole (null-safe — frame is optional) */
-      if (tplCanvas) ctx.drawImage(tplCanvas, 0, 0);
-
+    ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R, CIRCLE_R * 2, CIRCLE_R * 2);
       /* 4. Name */
       drawName(ctx, nameInput.value);
 
