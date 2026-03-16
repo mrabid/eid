@@ -59,6 +59,7 @@
     templateAsset.onerror = () => {
       /* Non-fatal — photo still generates, just without the frame */
       if (templateWarn) templateWarn.hidden = false;
+      if (photoBitmap) renderCanvas();
     };
   }
 
@@ -164,41 +165,46 @@
   function renderCanvas() {
     if (!photoBitmap) return;
 
-    const ctx = canvas.getContext('2d');
+    try {
+      const ctx = canvas.getContext('2d');
 
-    /* Reset canvas size (also clears it) */
-    canvas.width  = CW;
-    canvas.height = CH;
+      /* Reset canvas size (also clears it) */
+      canvas.width  = CW;
+      canvas.height = CH;
 
-    /* 1. White background */
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, CW, CH);
+      /* 1. White background */
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, CW, CH);
 
-    /* 2. Photo clipped to the circle */
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R);
-    ctx.restore();
+      /* 2. Photo clipped to the circle */
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R);
+      ctx.restore();
 
-    /* 3. Template with punched hole (null-safe — frame is optional) */
-    if (tplCanvas) ctx.drawImage(tplCanvas, 0, 0);
+      /* 3. Template with punched hole (null-safe — frame is optional) */
+      if (tplCanvas) ctx.drawImage(tplCanvas, 0, 0);
 
-    /* 4. Name */
-    drawName(ctx, nameInput.value);
+      /* 4. Name */
+      drawName(ctx, nameInput.value);
 
-    /* Reveal canvas */
-    canvas.hidden      = false;
-    placeholder.hidden = true;
-    downloadBtn.disabled = false;
+      /* Reveal canvas */
+      canvas.hidden      = false;
+      placeholder.hidden = true;
+      downloadBtn.disabled = false;
 
-    showLoading(false);
-
-    /* Pulse download button once to draw attention */
-    downloadBtn.classList.remove('pulse');
-    void downloadBtn.offsetWidth;
-    downloadBtn.classList.add('pulse');
+      /* Pulse download button once to draw attention */
+      downloadBtn.classList.remove('pulse');
+      void downloadBtn.offsetWidth;
+      downloadBtn.classList.add('pulse');
+    } catch (err) {
+      console.error('Render error:', err);
+      alert('Could not render your photo. Please choose another image and try again.');
+    } finally {
+      showLoading(false);
+    }
   }
 
 
@@ -314,12 +320,34 @@
   /* Download */
   downloadBtn.addEventListener('click', function () {
     if (canvas.hidden || downloadBtn.disabled) return;
-    try {
-      const a   = document.createElement('a');
+
+    const saveFile = function (fileUrl) {
+      const a = document.createElement('a');
+      a.style.display = 'none';
       a.download = 'eid-mubarak-chuti.png';
-      a.href     = canvas.toDataURL('image/png');
+      a.href = fileUrl;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
+    };
+
+    if (canvas.toBlob) {
+      canvas.toBlob(function (blob) {
+        if (!blob) {
+          alert('Download failed. Try running the app through a local server (e.g. Live Server in VS Code).');
+          return;
+        }
+        const blobUrl = URL.createObjectURL(blob);
+        saveFile(blobUrl);
+        URL.revokeObjectURL(blobUrl);
+      }, 'image/png');
+      return;
+    }
+
+    try {
+      saveFile(canvas.toDataURL('image/png'));
     } catch (e) {
+      console.error('Download error:', e);
       alert('Download failed. Try running the app through a local server (e.g. Live Server in VS Code).');
     }
   });
