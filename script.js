@@ -8,7 +8,7 @@
   const uploadSub = document.getElementById('uploadSub');
   const canvas = document.getElementById('previewCanvas');
   const placeholder = document.getElementById('previewPlaceholder');
-  const loadingEl = document.getElementById('previewLoading');
+  const successEl = document.getElementById('previewSuccess');
   const downloadBtn = document.getElementById('downloadBtn');
   const templateAsset = document.getElementById('templateAsset');
 
@@ -94,7 +94,6 @@
     if (file.size > 10 * 1024 * 1024) return alert('Max 10 MB');
 
     markUploadReady(file.name);
-    showLoading(true);
 
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -108,12 +107,12 @@
           console.warn('renderCanvas error:', e);
         }
         downloadBtn.disabled = false;
-        showLoading(false);
+        setTimeout(showSuccess, 3000);
       };
-      img.onerror = function () { showLoading(false); alert('Cannot read image'); };
+      img.onerror = function () { alert('Cannot read image'); };
       img.src = e.target.result;
     };
-    reader.onerror = function () { showLoading(false); alert('Cannot read file'); };
+    reader.onerror = function () { alert('Cannot read file'); };
     reader.readAsDataURL(file);
   }
 
@@ -194,7 +193,17 @@
   }
 
   /* ── UI HELPERS ── */
-  function showLoading(on) { loadingEl.hidden = !on; if (on) { canvas.hidden = false; placeholder.hidden = true; } }
+  function showSuccess() {
+    if (!successEl) return;
+    successEl.hidden = false;
+    setTimeout(function () {
+      successEl.classList.add('fade-out');
+      setTimeout(function () {
+        successEl.hidden = true;
+        successEl.classList.remove('fade-out');
+      }, 500);
+    }, 2500);
+  }
   function markUploadReady(name) {
     uploadZone.classList.add('ready');
     const mainEl = uploadZone.querySelector('.upload-main');

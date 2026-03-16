@@ -334,32 +334,41 @@ body {
   object-fit: contain;
 }
 
-/* Loading overlay */
-.preview-loading {
+/* Success overlay */
+.preview-success {
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.88);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(4px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.9rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #16a34a;
   border-radius: 16px;
+  z-index: 2;
+  animation: successIn 0.4s ease both;
+  transition: opacity 0.5s;
 }
-.preview-loading[hidden] { display: none; }
+.preview-success[hidden] { display: none; }
+.preview-success.fade-out { opacity: 0; }
 
-.spinner {
-  width: 42px;
-  height: 42px;
-  border: 3.5px solid #eee;
-  border-top-color: var(--crimson);
-  border-radius: 50%;
-  animation: spin 0.75s linear infinite;
+@keyframes successIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+.success-check {
+  animation: checkPop 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes checkPop {
+  from { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.2); }
+  to   { transform: scale(1); opacity: 1; }
+}
 
 /* ================================================================
    Actions

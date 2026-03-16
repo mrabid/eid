@@ -92,10 +92,13 @@
           <canvas id="previewCanvas" width="1080" height="1080"
                   aria-label="Preview of your Eid photo" hidden></canvas>
 
-          <!-- Loading overlay -->
-          <div class="preview-loading" id="previewLoading" hidden aria-live="polite">
-            <span class="spinner" aria-hidden="true"></span>
-            <p>Generating your photo…</p>
+          <!-- Success overlay -->
+          <div class="preview-success" id="previewSuccess" hidden aria-live="polite">
+            <svg class="success-check" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 12.5l2.5 2.5 5-5"/>
+            </svg>
+            <p>Photo generated successfully!</p>
           </div>
         </div>
       </section>
