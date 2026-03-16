@@ -2,7 +2,7 @@
   'use strict';
 
   /* ── DOM ── */
-  const photoInput = document.getElementById('photoInput');
+//  const photoInput = document.getElementById('photoInput');
   const nameInput = document.getElementById('employeeName');
   const uploadZone = document.getElementById('uploadZone');
   const uploadSub = document.getElementById('uploadSub');
@@ -29,7 +29,7 @@
   let nameTimer = null;
 
   /* ── TEMPLATE ── */
-//  function tryLoadTemplate() {
+  function tryLoadTemplate() {
     // If there is no external template image element, always fall back.
     if (!templateAsset) {
       tplCanvas = createFallbackTemplate();
