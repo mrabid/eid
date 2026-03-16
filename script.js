@@ -40,9 +40,10 @@
   const NAME_Y = 930;
 
   /* ── State ── */
-  let tplCanvas   = null;   // Offscreen canvas: template with punched hole (built once)
-  let photoBitmap = null;   // Offscreen canvas: user photo pre-cropped to 380×380
-  let nameTimer   = null;   // Debounce timer for name field
+  let tplCanvas      = null;   // Offscreen canvas: template with punched hole (built once)
+  let photoBitmap    = null;   // Offscreen canvas: user photo pre-cropped to 380×380
+  let photoOriginal  = null;   // fallback raw image when crop fails
+  let nameTimer      = null;   // Debounce timer for name field
 
   // Ensure a frame is always available before template asset loads
   tplCanvas = createFallbackTemplate();
@@ -160,15 +161,16 @@
     reader.onload = function (e) {
       const img   = new Image();
       img.onload  = function () {
+        photoOriginal = img;
         try {
           photoBitmap = cropToBitmap(img);
-          renderCanvas();
-          downloadBtn.disabled = false;
         } catch (err) {
-          showLoading(false);
-          console.error('Image processing error:', err);
-          alert('Could not process this image. Please try another file.');
+          console.warn('Crop failed; using raw image render', err);
+          photoBitmap = null;
         }
+
+        renderCanvas();
+        downloadBtn.disabled = false;
       };
       img.onerror = function () {
         showLoading(false);
@@ -193,6 +195,11 @@
     const size  = CIRCLE_R * 2;             // 380 px
     const iw    = img.naturalWidth  || img.width;
     const ih    = img.naturalHeight || img.height;
+
+    if (!(iw > 0 && ih > 0)) {
+      throw new Error('Invalid image dimensions');
+    }
+
     const scale = Math.max(size / iw, size / ih);
     const sw    = iw * scale;
     const sh    = ih * scale;
@@ -200,7 +207,10 @@
     const off   = document.createElement('canvas');
     off.width   = size;
     off.height  = size;
-    off.getContext('2d').drawImage(
+    const ctx = off.getContext('2d');
+    if (!ctx) throw new Error('2D context unavailable');
+
+    ctx.drawImage(
       img,
       -(sw - size) / 2,
       -(sh - size) / 2,
@@ -215,7 +225,7 @@
      ════════════════════════════════════════════════════════ */
 
   function renderCanvas() {
-    if (!photoBitmap) return;
+    if (!photoBitmap && !photoOriginal) return;
 
     try {
       const ctx = canvas.getContext('2d');
@@ -233,20 +243,31 @@
       ctx.beginPath();
       ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
       ctx.clip();
-    ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R, CIRCLE_R * 2, CIRCLE_R * 2);
-      /* 4. Name */
-      drawName(ctx, nameInput.value);
 
-      /* Reveal canvas */
-      canvas.hidden      = false;
-      placeholder.hidden = true;
-      downloadBtn.disabled = false;
+    const drawSource = photoBitmap || photoOriginal;
+    if (photoBitmap) {
+      ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R, CIRCLE_R * 2, CIRCLE_R * 2);
+    } else {
+      /* fallback: cover behavior for source image in circle */
+      const srcW = drawSource.naturalWidth || drawSource.width;
+      const srcH = drawSource.naturalHeight || drawSource.height;
+      const scale = Math.max((CIRCLE_R * 2) / srcW, (CIRCLE_R * 2) / srcH);
+      const dw = srcW * scale;
+      const dh = srcH * scale;
+      ctx.drawImage(drawSource,
+        (CIRCLE_R * 2 - dw) / 2 + CIRCLE_CX - CIRCLE_R,
+        (CIRCLE_R * 2 - dh) / 2 + CIRCLE_CY - CIRCLE_R,
+        dw, dh
+      );
+    }
 
-      /* Pulse download button once to draw attention */
-      downloadBtn.classList.remove('pulse');
-      void downloadBtn.offsetWidth;
-      downloadBtn.classList.add('pulse');
-    } catch (err) {
+    /* 4. Name */
+    drawName(ctx, nameInput.value);
+
+    /* Reveal canvas */
+    canvas.hidden      = false;
+    placeholder.hidden = true;
+    downloadBtn.disabled = false;
       console.error('Render error:', err);
       alert('Could not render your photo. Please choose another image and try again.');
     } finally {
