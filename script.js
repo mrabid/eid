@@ -159,21 +159,21 @@
         dw, dh
       );
       ctx.restore();
-
-      // Red circle border
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
-      ctx.strokeStyle = '#e30000';
-      ctx.lineWidth = 8;
-      ctx.stroke();
-      ctx.restore();
     }
  
     // 2️⃣ Draw template on top (with circular window cut out)
     if (tplCanvas) ctx.drawImage(tplCanvas, 0, 0);
 
-    // 3️⃣ Draw name
+    // 3️⃣ Red circle border — drawn after template so it's always visible
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
+    ctx.strokeStyle = '#e30000';
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    ctx.restore();
+
+    // 4️⃣ Draw name
     drawName(ctx, nameInput.value);
 
     canvas.hidden = false;
