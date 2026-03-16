@@ -524,12 +524,16 @@ body {
 .is-bkash-number {
   font-size: 2.1rem;
   font-weight: 900;
-  color: #ff6b9d;
   letter-spacing: 0.08em;
-  text-shadow: 0 0 28px rgba(255,107,157,0.55);
   font-family: 'Inter', monospace, sans-serif;
   margin-bottom: 1.1rem;
   line-height: 1;
+  background: linear-gradient(135deg, #ff8a8a 0%, #ffffff 50%, #ff8a8a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  text-decoration: none;
 }
 
 .is-ref {
@@ -714,20 +718,24 @@ body {
 }
 .salami-bkash {
   background: rgba(255,255,255,0.05);
-  border: 1.5px solid rgba(255,107,157,0.4);
+  border: 1.5px solid rgba(255,138,138,0.4);
   border-radius: 14px;
   padding: 0.85rem 1rem;
   margin-bottom: 1rem;
-  box-shadow: 0 0 24px rgba(255,107,157,0.12) inset;
+  box-shadow: 0 0 24px rgba(255,138,138,0.12) inset;
 }
 .bkash-number {
   font-size: 2rem;
   font-weight: 900;
-  color: #ff6b9d;
   letter-spacing: 0.08em;
-  text-shadow: 0 0 28px rgba(255,107,157,0.6);
   font-family: 'Inter', monospace, sans-serif;
   display: block;
+  background: linear-gradient(135deg, #ff8a8a 0%, #ffffff 50%, #ff8a8a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  text-decoration: none;
 }
 
 /* ── Reference chips ── */
@@ -790,7 +798,7 @@ body {
 .timer-bar {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, var(--gold), #ff6b9d);
+  background: linear-gradient(90deg, var(--gold), #ff8a8a);
   border-radius: 3px;
   transform-origin: left;
   animation: timerShrink 7s linear forwards;
@@ -807,10 +815,11 @@ body {
 
 @media (max-width: 440px) {
   .salami-body-wrap { padding: 1.1rem 1.2rem 1.3rem; }
-  .bkash-number { font-size: 1.65rem; }
+  .bkash-number { font-size: 1.55rem; }
   .salami-verse p { font-size: 1rem; }
   .verse-bold { font-size: 1.1rem !important; }
   .salami-hook { font-size: 1.1rem; }
+  .salami-card { max-width: 95%; }
 }
 
 /* ================================================================
@@ -819,14 +828,16 @@ body {
 .is-bkash-number[data-copy],
 .bkash-number[data-copy] {
   cursor: pointer;
-  transition: transform 0.15s, text-shadow 0.15s;
+  transition: transform 0.15s, filter 0.15s;
   user-select: all;
   -webkit-user-select: all;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none !important;
 }
 .is-bkash-number[data-copy]:hover,
 .bkash-number[data-copy]:hover {
   transform: scale(1.04);
-  text-shadow: 0 0 36px rgba(255,107,157,0.8);
+  filter: brightness(1.2) drop-shadow(0 0 12px rgba(255,138,138,0.6));
 }
 .is-bkash-number[data-copy]:active,
 .bkash-number[data-copy]:active {

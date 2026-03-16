@@ -2,7 +2,7 @@
   'use strict';
 
   /* ── DOM ── */
-//  const photoInput = document.getElementById('photoInput');
+  const photoInput = document.getElementById('photoInput');
   const nameInput = document.getElementById('employeeName');
   const uploadZone = document.getElementById('uploadZone');
   const uploadSub = document.getElementById('uploadSub');
@@ -107,7 +107,7 @@
           console.warn('renderCanvas error:', e);
         }
         downloadBtn.disabled = false;
-        setTimeout(showSuccess, 3000);
+        showSuccess();
       };
       img.onerror = function () { alert('Cannot read image'); };
       img.src = e.target.result;
@@ -195,14 +195,18 @@
   /* ── UI HELPERS ── */
   function showSuccess() {
     if (!successEl) return;
+    successEl.classList.remove('fade-out');
+    successEl.style.animation = 'none';
     successEl.hidden = false;
+    void successEl.offsetWidth;
+    successEl.style.animation = '';
     setTimeout(function () {
       successEl.classList.add('fade-out');
       setTimeout(function () {
         successEl.hidden = true;
         successEl.classList.remove('fade-out');
-      }, 500);
-    }, 2500);
+      }, 100);
+    }, 100);
   }
   function markUploadReady(name) {
     uploadZone.classList.add('ready');
