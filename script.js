@@ -54,18 +54,21 @@
      ════════════════════════════════════════════════════════ */
 
   function tryLoadTemplate() {
-    /* The <img> is already in the DOM; if it loaded, use it immediately */
+    if (tplCanvas) return;
+
     if (templateAsset.complete && templateAsset.naturalWidth > 0) {
       buildTplCanvas(templateAsset);
       return;
     }
-    templateAsset.onload  = () => buildTplCanvas(templateAsset);
-    templateAsset.onerror = () => {
-      /* Non-fatal — photo still generates, just without the frame */
+
+    templateAsset.onload = function () {
+      buildTplCanvas(templateAsset);
+    };
+
+    templateAsset.onerror = function () {
       if (templateWarn) templateWarn.hidden = false;
       tplCanvas = createFallbackTemplate();
-      if (photoBitmap) renderCanvas();
-      else renderTemplatePreview();
+      renderTemplatePreview();
     };
   }
 
@@ -78,7 +81,6 @@
     ctx.fillStyle = '#fdf8f4';
     ctx.fillRect(0, 0, CW, CH);
 
-    // outer soft gold border and inner decorative rings
     const border = 24;
     ctx.strokeStyle = 'rgba(201, 168, 76, 0.85)';
     ctx.lineWidth = border;
@@ -88,7 +90,6 @@
     ctx.lineWidth = 14;
     ctx.strokeRect(70, 70, CW - 140, CH - 140);
 
-    // punched photo area
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
     ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
@@ -106,7 +107,6 @@
 
     ctx.drawImage(img, 0, 0, CW, CH);
 
-    /* Punch transparent hole where the user photo should appear */
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
     ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
@@ -114,13 +114,13 @@
     ctx.globalCompositeOperation = 'source-over';
 
     tplCanvas = off;
+    renderTemplatePreview();
 
-    /* If there is no photo yet, show the template-only preview */
-    if (!photoBitmap) renderTemplatePreview();
-
-    /* Re-render if user uploaded a photo before the template finished loading */
-    if (photoBitmap) renderCanvas();
+    if (photoBitmap) {
+      renderCanvas();
+    }
   }
+
   function renderTemplatePreview() {
     if (!tplCanvas) return;
 
@@ -132,7 +132,7 @@
     ctx.fillRect(0, 0, CW, CH);
     ctx.drawImage(tplCanvas, 0, 0);
 
-    canvas.hidden      = false;
+    canvas.hidden = false;
     placeholder.hidden = true;
     downloadBtn.disabled = true;
   }
@@ -159,24 +159,26 @@
     const reader = new FileReader();
 
     reader.onload = function (e) {
-      const img   = new Image();
-      img.onload  = function () {
+      const img = new Image();
+      img.onload = function () {
         photoOriginal = img;
+
         try {
           photoBitmap = cropToBitmap(img);
         } catch (err) {
-          console.warn('Crop failed; using raw image render', err);
+          console.warn('Crop failed; using fallback image for render', err);
           photoBitmap = null;
         }
 
         renderCanvas();
         downloadBtn.disabled = false;
+        showLoading(false);
       };
       img.onerror = function () {
         showLoading(false);
         alert('Could not read this image. Please try another file.');
       };
-      img.src = e.target.result;   // always a data: URL — safe on canvas
+      img.src = e.target.result;
     };
 
     reader.onerror = function () {
@@ -225,49 +227,56 @@
      ════════════════════════════════════════════════════════ */
 
   function renderCanvas() {
-    if (!photoBitmap && !photoOriginal) return;
+    if (!photoOriginal && !photoBitmap) {
+      renderTemplatePreview();
+      return;
+    }
 
     try {
       const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Canvas context unavailable');
 
-      /* Reset canvas size (also clears it) */
-      canvas.width  = CW;
+      canvas.width = CW;
       canvas.height = CH;
 
-      /* 1. White background */
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, CW, CH);
 
-      /* 2. Photo clipped to the circle */
       ctx.save();
       ctx.beginPath();
       ctx.arc(CIRCLE_CX, CIRCLE_CY, CIRCLE_R, 0, Math.PI * 2);
       ctx.clip();
 
-    const drawSource = photoBitmap || photoOriginal;
-    if (photoBitmap) {
-      ctx.drawImage(photoBitmap, CIRCLE_CX - CIRCLE_R, CIRCLE_CY - CIRCLE_R, CIRCLE_R * 2, CIRCLE_R * 2);
-    } else {
-      /* fallback: cover behavior for source image in circle */
+      const drawSource = photoBitmap || photoOriginal;
       const srcW = drawSource.naturalWidth || drawSource.width;
       const srcH = drawSource.naturalHeight || drawSource.height;
       const scale = Math.max((CIRCLE_R * 2) / srcW, (CIRCLE_R * 2) / srcH);
       const dw = srcW * scale;
       const dh = srcH * scale;
-      ctx.drawImage(drawSource,
+
+      ctx.drawImage(
+        drawSource,
         (CIRCLE_R * 2 - dw) / 2 + CIRCLE_CX - CIRCLE_R,
         (CIRCLE_R * 2 - dh) / 2 + CIRCLE_CY - CIRCLE_R,
         dw, dh
       );
-    }
 
-    /* 4. Name */
-    drawName(ctx, nameInput.value);
+      ctx.restore();
 
-    /* Reveal canvas */
-    canvas.hidden      = false;
-    placeholder.hidden = true;
-    downloadBtn.disabled = false;
+      if (tplCanvas) {
+        ctx.drawImage(tplCanvas, 0, 0);
+      }
+
+      drawName(ctx, nameInput.value);
+
+      canvas.hidden = false;
+      placeholder.hidden = true;
+      downloadBtn.disabled = false;
+
+      downloadBtn.classList.remove('pulse');
+      void downloadBtn.offsetWidth;
+      downloadBtn.classList.add('pulse');
+    } catch (err) {
       console.error('Render error:', err);
       alert('Could not render your photo. Please choose another image and try again.');
     } finally {
