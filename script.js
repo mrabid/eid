@@ -22,23 +22,28 @@
 
   const NAME_X = 535;
   const NAME_Y = 930;
-
+ 
   let tplCanvas = null;
   let photoBitmap = null;
   let photoOriginal = null;
   let nameTimer = null;
 
-  tplCanvas = createFallbackTemplate();
-
   /* ── TEMPLATE ── */
   function tryLoadTemplate() {
-    if (tplCanvas) return;
+    // If there is no external template image element, always fall back.
+    if (!templateAsset) {
+      tplCanvas = createFallbackTemplate();
+      renderCanvas();
+      return;
+    }
 
+    // If the image is already loaded and valid, build from it.
     if (templateAsset.complete && templateAsset.naturalWidth > 0) {
       buildTplCanvas(templateAsset);
       return;
     }
 
+    // Otherwise, wait for load / error.
     templateAsset.onload = function () { buildTplCanvas(templateAsset); };
     templateAsset.onerror = function () {
       if (templateWarn) templateWarn.hidden = false;
@@ -130,10 +135,7 @@
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, CW, CH);
 
-    // 1️⃣ Draw template first (with hole)
-    if (tplCanvas) ctx.drawImage(tplCanvas, 0, 0);
-
-    // 2️⃣ Draw photo inside circle
+    // 1️⃣ Draw photo inside circle (background layer)
     if (photoBitmap || photoOriginal) {
       ctx.save();
       ctx.beginPath();
@@ -154,6 +156,9 @@
       );
       ctx.restore();
     }
+ 
+    // 2️⃣ Draw template on top (with circular window cut out)
+    if (tplCanvas) ctx.drawImage(tplCanvas, 0, 0);
 
     // 3️⃣ Draw name
     drawName(ctx, nameInput.value);
