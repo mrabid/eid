@@ -798,10 +798,10 @@ body {
 .timer-bar {
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, var(--gold), #ff8a8a);
+  background: linear-gradient(90deg, #f5c842, #e6a800);
   border-radius: 3px;
   transform-origin: left;
-  animation: timerShrink 7s linear forwards;
+  animation: timerShrink 5s linear forwards;
 }
 @keyframes timerShrink {
   from { transform: scaleX(1); }

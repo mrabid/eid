@@ -269,7 +269,7 @@
     const countEl = document.getElementById('timerCount');
     if (!overlay) return;
 
-    let seconds = 7;
+    let seconds = 5;
     const interval = setInterval(function () {
       seconds--;
       if (countEl) countEl.textContent = seconds;
