@@ -183,12 +183,36 @@
     const name = (rawName || '').trim();
     if (!name) return;
     ctx.save();
-    const size = 25;
+    const size = 22;
+    const lineGap = 4;
     ctx.font = `600 ${size}px 'Kazi Typo Unicode', 'Cinzel', Georgia, serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    ctx.shadowColor = 'rgba(0,0,0,0.25)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 1;
-    ctx.fillStyle = '#e30000'; ctx.fillText(name, NAME_X, NAME_Y);
-    ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(80, 0, 0, 0.4)'; ctx.strokeText(name, NAME_X, NAME_Y);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetY = 1;
+
+    var words = name.split(/\s+/);
+    var lines = [];
+    if (words.length <= 2) {
+      lines = [name];
+    } else {
+      var mid = Math.ceil(words.length / 2);
+      lines.push(words.slice(0, mid).join(' '));
+      lines.push(words.slice(mid).join(' '));
+    }
+
+    var totalH = lines.length * size + (lines.length - 1) * lineGap;
+    var startY = NAME_Y - totalH / 2 + size;
+
+    for (var i = 0; i < lines.length; i++) {
+      var ly = startY + i * (size + lineGap);
+      ctx.fillStyle = '#e30000';
+      ctx.fillText(lines[i], NAME_X, ly);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(80, 0, 0, 0.4)';
+      ctx.strokeText(lines[i], NAME_X, ly);
+    }
     ctx.restore();
   }
 
